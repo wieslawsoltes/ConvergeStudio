@@ -1,0 +1,5 @@
+node_modules/
+vendor/*.js
+vendor/*.wasm
+vendor/web-ifc-LICENSE.md
+.DS_Store
