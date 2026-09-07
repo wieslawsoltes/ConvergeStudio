@@ -1,0 +1,109 @@
+name: Publish Converge Studio
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # One-time, verified source restoration; no force push.
+    outputs:
+      source: ${{ steps.source.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Restore original delivered source once
+        id: restore
+        if: ${{ hashFiles('.github/source-transfer/part-*.b64') != '' }}
+        run: node scripts/restore-source.mjs
+      - name: Install pinned IFC dependency and stage WebAssembly
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --ignore-scripts --no-fund --no-audit
+          else
+            npm install --ignore-scripts --no-fund --no-audit
+          fi
+          npm run vendor:ifc
+      - name: Generate fixtures, test core and build
+        run: |
+          mkdir -p examples
+          npm run examples
+          npm test
+          npm run build
+          npm run build:pages
+      - name: Install browser test runtime
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+          python -c "from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print('CHROMIUM_PATH='+p.chromium.executable_path); p.stop()" >> "$GITHUB_ENV"
+      - name: Test project-path hosting, workflows, IFC WASM and IndexedDB
+        run: |
+          mkdir -p .ci-web
+          ln -s "$PWD/_site" .ci-web/ConvergeStudio
+          python -m http.server 8081 --bind 127.0.0.1 --directory .ci-web > /tmp/converge-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8081/ConvergeStudio/ > /dev/null; then break; fi
+            sleep 1
+          done
+          python scripts/browser-smoke.py --url 'http://127.0.0.1:8081/ConvergeStudio/?ifc=native' --browser "$CHROMIUM_PATH" --output docs/browser-validation.json
+          python scripts/pages-smoke.py --url 'http://127.0.0.1:8081/ConvergeStudio/' --browser "$CHROMIUM_PATH" | tee docs/pages-validation.json
+      - name: Commit restored readable sources after validation
+        if: steps.restore.outputs.restored == 'true'
+        run: |
+          cp dist/converge-studio.html docs/index.html
+          touch docs/.nojekyll
+          rm -rf .github/source-transfer
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Restore complete Converge Studio source and reproducible Pages build'
+          git push origin HEAD:main
+      - name: Stamp final source revision and build publication artifact
+        id: source
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          npm run build:pages
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Publish tested artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.build.outputs.source }}
+      - name: Verify public deployment and asset checksums
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+          EXPECTED_SOURCE: ${{ needs.build.outputs.source }}
+        run: python scripts/verify-published.py
