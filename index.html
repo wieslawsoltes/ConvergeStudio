@@ -1,1 +1,358 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#183a32"><meta name="description" content="Converge Studio — BIM model federation, inspection and coordination."><title>Converge Studio · Model Coordination</title><link rel="stylesheet" href="styles.css"></head><body><div id="app"><header class="titlebar"><div class="brand">converge <span>studio</span></div><button class="project-title" id="projectName">Harbor Point · Building A</button><div class="title-spacer"></div><span id="saveState">Local-first workspace</span><button class="icon-button" data-action="undo">Undo</button><button class="icon-button" data-action="redo">Redo</button></header><nav class="ribbon-tabs"><button class="file-tab">File</button><button>Home</button><button>Review</button><button>Viewpoint</button><button>Coordination</button><button>Output</button></nav><section class="ribbon" id="ribbon"><div class="ribbon-group"><div class="ribbon-buttons"><button class="ribbon-tool primary" data-action="append">Append model</button><button class="ribbon-tool" data-action="save">Save</button><button class="ribbon-tool" data-action="fit">Fit all</button><button class="ribbon-tool" data-action="section">Section</button></div></div></section><main id="workspace"><aside class="model-dock dock"><div class="dock-title"><span>Selection tree</span><button data-action="append">+</button></div><div class="dock-tabs"><button class="active">Models <span id="modelCount">0</span></button><button>Selection sets</button></div><div class="search-field"><input id="treeSearch" placeholder="Search names or properties…"></div><div class="tree" id="tree"></div><div class="model-summary" id="federationSummary">Federated project</div></aside><section class="viewport"><div class="viewport-header"><strong id="viewportTitle">Federated model</strong><span id="engineStatus">Renderer</span></div><div class="scene" id="scene"><canvas id="canvas"></canvas><div class="scene-badge" id="sceneBadge">FEDERATED VIEW</div></div></section><aside class="inspector"><div class="dock-title">Properties</div><div id="inspectorBody"></div></aside><section class="bottom-dock"><div class="dock-title">Clash Detective</div><div id="bottomBody"><div class="empty">Coordination results</div></div></section></main><footer class="statusbar">Converge Studio · Local-first coordination workspace</footer></div><div id="toastStack" class="toast-stack"></div><div id="loadingOverlay"><div class="loading-card"><h3>Opening Converge Studio</h3><p>Preparing federated workspace…</p></div></div><input id="fileInput" type="file" accept=".ifc,.gltf,.glb" multiple hidden><script type="module" src="src/app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <meta content="#183a32" name="theme-color"/>
+  <meta content="Converge Studio — local-first BIM model federation, inspection and coordination." name="description"/>
+  <title>
+   Converge Studio · Model Coordination
+  </title>
+  <link href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23278c68'/%3E%3Cpath d='M28 12H17L10 20l7 8h11M23 15l-5 5 5 5' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E" rel="icon"/>
+  <link href="styles.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <div id="app">
+   <header class="titlebar">
+    <div class="brand">
+     <span class="brand-mark">
+      <svg viewbox="0 0 32 32">
+       <path d="M25 7H14L6 16l8 9h11M20 10l-6 6 6 6">
+       </path>
+      </svg>
+     </span>
+     <strong>
+      converge
+      <span>
+       studio
+      </span>
+     </strong>
+    </div>
+    <div class="title-divider">
+    </div>
+    <button class="project-title" data-action="rename" id="projectName">
+     Harbor Point · Building A
+    </button>
+    <span class="project-tag">
+     COORDINATION
+    </span>
+    <div class="title-spacer">
+    </div>
+    <span class="save-state" id="saveState">
+     Local-first workspace
+    </span>
+    <button aria-label="Undo" class="title-icon" data-action="undo" data-icon="undo" title="Undo · Ctrl+Z">
+    </button>
+    <button aria-label="Redo" class="title-icon" data-action="redo" data-icon="redo" title="Redo · Ctrl+Shift+Z">
+    </button>
+    <button aria-label="Help" class="title-icon" data-action="help" data-icon="help" title="Help &amp; keyboard shortcuts">
+    </button>
+    <div class="avatar" title="Local workspace">
+     LC
+    </div>
+   </header>
+   <nav aria-label="Ribbon" class="ribbon-tabs" id="ribbonTabs">
+    <button class="file-tab" data-action="project-menu">
+     File
+    </button>
+    <button class="active" data-tab="Home">
+     Home
+    </button>
+    <button data-tab="Review">
+     Review
+    </button>
+    <button data-tab="Viewpoint">
+     Viewpoint
+    </button>
+    <button data-tab="Coordination">
+     Coordination
+    </button>
+    <button data-tab="Output">
+     Output
+    </button>
+    <div class="title-spacer">
+    </div>
+    <button class="search-command" data-action="commands">
+     <span data-icon="search">
+     </span>
+     Find a command
+     <kbd>
+      ⌘ K
+     </kbd>
+    </button>
+   </nav>
+   <section aria-label="Tools" class="ribbon" id="ribbon">
+   </section>
+   <main id="workspace">
+    <aside class="model-dock dock">
+     <div class="dock-title">
+      <span>
+       Selection tree
+      </span>
+      <div>
+       <button aria-label="Append model" class="icon-button" data-action="append" data-icon="plus" title="Append a model">
+       </button>
+       <button aria-label="Federation settings" class="icon-button" data-action="model-settings" data-icon="settings" title="Federation settings">
+       </button>
+      </div>
+     </div>
+     <div class="dock-tabs">
+      <button class="active" data-left="models">
+       Models
+       <span id="modelCount">
+        5
+       </span>
+      </button>
+      <button data-left="sets">
+       Selection sets
+      </button>
+     </div>
+     <div class="search-field">
+      <span data-icon="search">
+      </span>
+      <input aria-label="Search model tree" id="treeSearch" placeholder="Search names or properties…"/>
+      <kbd>
+       /
+      </kbd>
+     </div>
+     <div aria-label="Federated models" class="tree" id="tree" role="tree">
+     </div>
+     <div class="model-summary">
+      <span class="status-dot">
+      </span>
+      <span id="federationSummary">
+       Federated project
+      </span>
+      <button aria-label="Append model" class="icon-button" data-action="append" data-icon="append" title="Append model">
+      </button>
+     </div>
+     <div class="resize-vertical" id="leftResize">
+     </div>
+    </aside>
+    <section class="viewport" id="viewport">
+     <div class="viewport-header">
+      <div>
+       <span data-icon="cube">
+       </span>
+       <strong id="viewportTitle">
+        Federated model
+       </strong>
+       <span class="view-divider">
+        /
+       </span>
+       <span id="viewModeLabel">
+        Perspective
+       </span>
+      </div>
+      <div>
+       <select aria-label="Render style" id="shadingMode">
+        <option value="shaded">
+         Shaded
+        </option>
+        <option value="wireframe">
+         Wireframe
+        </option>
+       </select>
+       <button aria-label="Toggle grid" class="icon-button" data-action="grid" data-icon="grid" title="Toggle grid">
+       </button>
+       <button aria-label="Maximize viewport" class="icon-button" data-action="fullscreen" data-icon="fullscreen" title="Maximize viewport">
+       </button>
+      </div>
+     </div>
+     <div class="scene" id="scene">
+      <canvas aria-label="Interactive 3D model viewport" id="canvas" tabindex="0">
+      </canvas>
+      <svg class="annotations" id="annotations" xmlns="http://www.w3.org/2000/svg">
+      </svg>
+      <div class="scene-badge">
+       <span class="green-dot">
+       </span>
+       <span id="sceneBadge">
+        FEDERATED VIEW
+       </span>
+      </div>
+      <div class="view-cube">
+       <button class="cube-top" data-action="top" title="Top view">
+        TOP
+       </button>
+       <div>
+        <button class="cube-front" data-action="front" title="Front view">
+         FRONT
+        </button>
+        <button class="cube-right" data-action="right" title="Right view">
+         RIGHT
+        </button>
+       </div>
+       <button class="cube-home" data-action="iso" title="Isometric view">
+        <span data-icon="home">
+        </span>
+       </button>
+       <span class="north-mark">
+        N
+       </span>
+      </div>
+      <div class="navigation-tools">
+       <button aria-label="Select" class="active" data-icon="select" data-tool="select" title="Select · V">
+       </button>
+       <button aria-label="Orbit" data-icon="orbit" data-tool="orbit" title="Orbit · O">
+       </button>
+       <button aria-label="Pan" data-icon="pan" data-tool="pan" title="Pan · P">
+       </button>
+       <span>
+       </span>
+       <button aria-label="Fit all" data-action="fit" data-icon="fit" title="Fit all · F">
+       </button>
+       <button aria-label="Focus selected" data-action="focus" data-icon="isolate" title="Focus selected">
+       </button>
+      </div>
+      <div class="section-panel hidden" id="sectionPanel">
+      </div>
+      <div class="measure-hint hidden" id="measureHint">
+      </div>
+      <div class="viewport-bottom">
+       <span class="axis-indicator">
+        <b class="axis-y">
+         Y
+        </b>
+        <b class="axis-x">
+         X
+        </b>
+        <b class="axis-z">
+         Z
+        </b>
+        <i>
+        </i>
+       </span>
+       <span id="navigationHint">
+        Drag to orbit · Right-drag to pan · Scroll to zoom
+       </span>
+       <span id="visibleCount">
+       </span>
+      </div>
+      <div class="selection-card hidden" id="selectionCard">
+      </div>
+      <div class="drop-overlay hidden" id="dropOverlay">
+       <span data-icon="append">
+       </span>
+       <h2>
+        Bring your models together.
+       </h2>
+       <p>
+        Drop IFC, GLB, glTF + buffers, or a Converge project
+       </p>
+      </div>
+      <div class="loading-overlay" id="loadingOverlay">
+       <div class="spinner">
+       </div>
+       <h3>
+        Opening coordination workspace
+       </h3>
+       <p>
+        Initializing the rendering engine…
+       </p>
+      </div>
+     </div>
+    </section>
+    <aside class="inspector dock">
+     <div class="dock-title">
+      <span>
+       Inspector
+      </span>
+      <button aria-label="Focus selection" class="icon-button" data-action="focus" data-icon="isolate" title="Focus selection">
+      </button>
+     </div>
+     <div class="dock-tabs">
+      <button class="active" data-right="properties">
+       Properties
+      </button>
+      <button data-right="views">
+       Saved viewpoints
+      </button>
+     </div>
+     <div class="inspector-content" id="inspectorContent">
+     </div>
+     <div class="resize-vertical" id="rightResize">
+     </div>
+    </aside>
+    <section class="bottom-dock dock" id="bottomDock">
+     <div class="resize-horizontal" id="bottomResize">
+     </div>
+     <div class="bottom-tabs">
+      <button class="active" data-bottom="clashes">
+       <span data-icon="clash">
+       </span>
+       Clash tests
+       <span class="tab-count" id="clashCount">
+        0
+       </span>
+      </button>
+      <button data-bottom="issues">
+       <span data-icon="issue">
+       </span>
+       Issues
+       <span class="tab-count" id="issueCount">
+        0
+       </span>
+      </button>
+      <button data-bottom="measurements">
+       <span data-icon="ruler">
+       </span>
+       Measurements
+      </button>
+      <button data-bottom="activity">
+       <span data-icon="clock">
+       </span>
+       Activity
+      </button>
+      <div class="title-spacer">
+      </div>
+      <button aria-label="Export report" class="icon-button" data-action="report" data-icon="report" title="Export coordination report">
+      </button>
+     </div>
+     <div class="bottom-content" id="bottomContent">
+     </div>
+    </section>
+   </main>
+   <footer class="statusbar">
+    <span id="engineStatus">
+     <i class="status-dot">
+     </i>
+     Initializing renderer
+    </span>
+    <span class="footer-divider">
+    </span>
+    <span id="renderStats">
+     —
+    </span>
+    <div class="title-spacer">
+    </div>
+    <span id="selectionStatus">
+     Nothing selected
+    </span>
+    <span class="footer-divider">
+    </span>
+    <span>
+     Metres
+    </span>
+    <span class="footer-divider">
+    </span>
+    <button data-action="commands">
+     Command palette
+     <kbd>
+      Ctrl K
+     </kbd>
+    </button>
+   </footer>
+  </div>
+  <input accept=".ifc,.gltf,.glb,.bin,.converge,.json" hidden="" id="fileInput" multiple="" type="file"/>
+  <dialog id="modal">
+  </dialog>
+  <div aria-live="polite" class="toast-stack" id="toastStack">
+  </div>
+  <noscript>
+   This application requires JavaScript. WebGPU is preferred; WebGL2 and software rendering are available as fallbacks.
+  </noscript>
+  <script src="src/app.js" type="module">
+  </script>
+ </body>
+</html>

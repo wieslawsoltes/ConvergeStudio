@@ -1,0 +1,180 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "Converge Studio original fixture"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sample federation",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Coordination root",
+      "children": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "Steel beam",
+      "mesh": 0,
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        6,
+        0.4,
+        0.35
+      ],
+      "extras": {
+        "Discipline": "Structure",
+        "Tag": "B-001"
+      }
+    },
+    {
+      "name": "Service duct",
+      "mesh": 1,
+      "translation": [
+        0,
+        2,
+        0.1
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        5
+      ],
+      "extras": {
+        "Discipline": "Mechanical",
+        "Tag": "D-001"
+      }
+    },
+    {
+      "name": "Repeated beam",
+      "mesh": 0,
+      "translation": [
+        0,
+        0,
+        2
+      ],
+      "scale": [
+        6,
+        0.4,
+        0.35
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Steel box",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1
+          },
+          "indices": 2,
+          "material": 0
+        }
+      ]
+    },
+    {
+      "name": "Duct box",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1
+          },
+          "indices": 2,
+          "material": 1
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "Steel",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.6,
+          0.68,
+          0.72,
+          1
+        ]
+      }
+    },
+    {
+      "name": "HVAC",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.93,
+          0.47,
+          0.2,
+          1
+        ]
+      }
+    }
+  ],
+  "buffers": [
+    {
+      "uri": "coordination-sample.bin",
+      "byteLength": 720
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 288
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 288,
+      "byteLength": 288
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 576,
+      "byteLength": 144
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC3",
+      "min": [
+        -0.5,
+        -0.5,
+        -0.5
+      ],
+      "max": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5125,
+      "count": 36,
+      "type": "SCALAR"
+    }
+  ]
+}

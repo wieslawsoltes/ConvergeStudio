@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "sourceCommit": "65be1034acf1f0eae6bc38d0141873769c992329",
+  "url": "http://127.0.0.1:8081/ConvergeStudio/",
+  "backend": "WebGL2",
+  "ifcVersion": "0.0.77",
+  "initialEntities": 143,
+  "indexedDBReload": true,
+  "uncaughtErrors": []
+}

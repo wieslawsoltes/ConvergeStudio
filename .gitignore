@@ -1,5 +1,11 @@
 node_modules/
 vendor/*.js
 vendor/*.wasm
-vendor/web-ifc-LICENSE.md
+vendor/web-ifc-LICENSE
+__pycache__/
+*.log
 .DS_Store
+
+_site/
+.ci-web/
+dist/

@@ -1,0 +1,238 @@
+{
+  "environment": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/143.0.0.0 Safari/537.36",
+    "backend": "WebGL2",
+    "origin": "http://127.0.0.1:8081",
+    "indexedDBAvailable": true
+  },
+  "checks": [
+    {
+      "name": "application starts without fatal error",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "five federated models / 143 real entities",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "initial triangle test reports 32 actual clashes",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "initial test is evaluated, not reused or seeded",
+      "passed": true,
+      "detail": {
+        "candidates": 32,
+        "tested": 32,
+        "reused": 0,
+        "milliseconds": 11.199999999953434
+      }
+    },
+    {
+      "name": "visible triangle surfaces are available for picking",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "viewport ID picking selects the ray-hit entity",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "property inspector shows selected object",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "hide changes model state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "undo restores hidden entity",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "redo hides entity again",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "selection set stores stable entity references",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "selection set reselects entities",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "six-plane section clipping is enabled",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "section plane edit updates persisted project",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "two surface picks create a nonzero 3D measurement",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "measurement annotation is drawn",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "top preset changes projection",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "saved viewpoint restores camera and projection",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "viewpoint restore participates in undo history",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "clash issue links both entities and viewpoint",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "issue status and comment are retained",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "clash review status updates",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "incremental rerun reuses all 32 unchanged pairs",
+      "passed": true,
+      "detail": {
+        "candidates": 32,
+        "tested": 0,
+        "reused": 32,
+        "milliseconds": 1.5999999998603016
+      }
+    },
+    {
+      "name": "rerun preserves review status",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "coordination property edits reach the element record",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "appearance override modifies the selected instance color",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "selected-element transform changes placement without duplicating geometry",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "federation transform applies translation and rotation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "federation transform invalidates prior clash results",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "undo restores model registration and valid prior results",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "clearance worker finds 12 conflicts at the 150 mm threshold",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "clearance results include the actual 110 mm surface gap",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "custom test stores set scopes and millimetre-to-metre conversion",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "GLB imports through worker into federated project",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "IFC sample imports geometry and properties through worker",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "import marks prior clash results stale",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "HTML report contains actual coordination and issue data",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "CSV contains real clash result records",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "portable export includes geometry and coordination state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "portable project import restores complete state",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "command palette filters working commands",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "command palette executes selected command",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no uncaught JavaScript errors",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "passed": true,
+  "uncaughtErrors": [],
+  "seconds": 9.27
+}
