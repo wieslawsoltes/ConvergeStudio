@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 concurrency:
   group: github-pages
   cancel-in-progress: false
@@ -16,8 +20,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    permissions:
-      contents: write # One-time, verified source restoration; no force push.
     outputs:
       source: ${{ steps.source.outputs.sha }}
     steps:
@@ -26,17 +28,9 @@ jobs:
         with:
           node-version: '22'
           package-manager-cache: false
-      - name: Restore original delivered source once
-        id: restore
-        if: ${{ hashFiles('.github/source-transfer/part-*.b64') != '' }}
-        run: node scripts/restore-source.mjs
       - name: Install pinned IFC dependency and stage WebAssembly
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci --ignore-scripts --no-fund --no-audit
-          else
-            npm install --ignore-scripts --no-fund --no-audit
-          fi
+          npm ci --ignore-scripts --no-fund --no-audit
           npm run vendor:ifc
       - name: Generate fixtures, test core and build
         run: |
@@ -63,17 +57,6 @@ jobs:
           done
           python scripts/browser-smoke.py --url 'http://127.0.0.1:8081/ConvergeStudio/?ifc=native' --browser "$CHROMIUM_PATH" --output docs/browser-validation.json
           python scripts/pages-smoke.py --url 'http://127.0.0.1:8081/ConvergeStudio/' --browser "$CHROMIUM_PATH" | tee docs/pages-validation.json
-      - name: Commit restored readable sources after validation
-        if: steps.restore.outputs.restored == 'true'
-        run: |
-          cp dist/converge-studio.html docs/index.html
-          touch docs/.nojekyll
-          rm -rf .github/source-transfer
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Restore complete Converge Studio source and reproducible Pages build'
-          git push origin HEAD:main
       - name: Stamp final source revision and build publication artifact
         id: source
         run: |
